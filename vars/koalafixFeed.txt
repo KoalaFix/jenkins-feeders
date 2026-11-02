@@ -1,0 +1,37 @@
+Writes a fact to KoalaFix memory from a Pipeline: the release of a repository, the version npm or PyPI serves as
+latest, the digest an image tag points to, or an HTTP probe of a service only your network can reach. It runs the same feeders as the KoalaFix GitHub Action.
+
+The token comes from a Jenkins "Secret text" credential named by credentialsId. Jenkins masks it in the log, and
+it reaches the feeder only through the environment. The step needs a Linux or macOS agent. With Node 22 or newer and
+npx on the agent it runs every feeder; without them http-probe sends the plain HTTPS request with curl and the other
+feeders fail with a message saying so.
+
+<pre>
+koalafixFeed(
+    feeder: 'http-probe',
+    credentialsId: 'koalafix-feeder-token',
+    space: 'your-space',
+    key: 'billing.health',
+    url: 'http://billing.internal/healthz',
+    interval: '900'
+)
+</pre>
+
+Inputs:
+  feeder         required. github-release, npm-version, pypi-version, http-probe or image-tag.
+  credentialsId  required. The id of the Secret text credential that holds the feeder token.
+  space          required. The space the key belongs to.
+  key            required. The key to write, lower-case subject.fact, for example release.latest.
+  serverUrl      the KoalaFix server's address. Default https://mcp.koalafix.com.
+  event          github-release only. A file holding the GitHub release as the releases API returns it.
+  package        npm-version and pypi-version only. The npm package or PyPI project whose latest version is written. Quote the name, 'package'.
+  url            http-probe only. The address the probe requests with GET.
+  expectStatus   http-probe only. The status that counts as up. Default 200.
+  expectBody     http-probe only. A regular expression the first 1 MiB of the body must match. Needs Node.
+  interval       http-probe only. Seconds between runs; runs inside one interval are one event. Default 60.
+  image          image-tag only. The image tag whose digest is written, registry/name:tag. Needs Node.
+  registryUsername  image-tag only. The registry user, for a private image.
+  registryPassword  image-tag only. The registry password or token, from a withCredentials block around the step.
+
+The step fails with the feeder's exit code: 1 when KoalaFix refused the request or could not be reached, 2 when an
+input is wrong, 3 when KoalaFix took the request but refused the fact.

@@ -25,14 +25,14 @@ The library is the public Git repository `https://github.com/koalafix/jenkins-fe
 
 - Everywhere: Manage Jenkins, System, Global Trusted Pipeline Libraries, Add. Name `koalafix-feeders`, default version
   a release tag such as `1.0.0`, retrieval method Modern SCM, Git, the repository above. A global library's code runs
-  outside the Groovy sandbox, so pin a tag you have read.
+  outside the Groovy sandbox, so pin the commit of a release you have read, in the Jenkinsfile as below.
 - In one folder: the folder's Configure page, Pipeline Libraries, with the same fields. A folder library runs in the
   Groovy sandbox; the step needs no script approval there.
 
 A Jenkinsfile then loads it, with the tag if you did not set a default version:
 
 ```groovy
-@Library('koalafix-feeders@1.0.0') _
+@Library('koalafix-feeders@1cf934656a3f903ce5076db80aa48ab276410498') _
 ```
 
 ## The step
@@ -73,7 +73,7 @@ fetch fails and nothing is written. For a private repository, add a GitHub token
 release belongs to.
 
 ```groovy
-@Library('koalafix-feeders@1.0.0') _
+@Library('koalafix-feeders@1cf934656a3f903ce5076db80aa48ab276410498') _
 
 pipeline {
   agent any
@@ -94,7 +94,7 @@ pipeline {
 ## Write the version npm serves as latest
 
 ```groovy
-@Library('koalafix-feeders@1.0.0') _
+@Library('koalafix-feeders@1cf934656a3f903ce5076db80aa48ab276410498') _
 
 pipeline {
   agent any
@@ -118,7 +118,7 @@ Run it from a scheduled job on an agent inside the network, with a label such as
 schedule's gap in seconds, so runs inside one gap are one event.
 
 ```groovy
-@Library('koalafix-feeders@1.0.0') _
+@Library('koalafix-feeders@1cf934656a3f903ce5076db80aa48ab276410498') _
 
 pipeline {
   agent { label 'internal' }
